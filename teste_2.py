@@ -1,75 +1,100 @@
-livro_ex = {
-    "nome": "Nome do Livro",
-    "autor": "Nome do Autor",
-    "ano": "Ano de lançamento",
-    "quantidade": 0
+from typing import Any
+
+LIVRO_EXEMPLO: dict[str, Any] = {
+  "nome": "dicionário aurélio",
+  "autor": "aurélio",
+  "ano": 2024,
+  "quantidade": 1,
 }
-catalogo = []
+CATALOGO: list[dict[str, Any]] = []
 
 
-def busca_nome(nome):
-    for livro in catalogo:
-        if livro["nome"] == nome:
-            print("Livro já cadastrado")
-            return True
-        else:
-            print("não é o livro")
-
-    print("terminamos o loop")
-    print("livro não existe")
-    return False
+def criar_livro(nome: str, autor: str, ano: int, quantidade: int):
+  livro = {
+    "nome": nome,
+    "autor": autor,
+    "ano": ano,
+    "quantidade": quantidade
+  }
+  return livro
 
 
-def cadastrado():
-  novo_livro = livro_ex.copy()
-  novo_livro["nome"] = cadastro
+def exibir_informacao_do_livro(livro: dict[str, Any]):
+  print(f" - Nome: {livro['nome']} | Autor: {livro['autor']} | Quantidade: {livro['quantidade']}")
+
+
+def cadastrar_livro(nome: str):
   autor = input("Insira o nome do autor do livro cadastrado: ")
-  novo_livro["autor"] = autor
   ano = int(input("Insira o ano de lançamento do livro: "))
-  novo_livro["ano"] = ano
   quantidade = int(input("Quantos livros serão disponíveis para retirada? "))
-  novo_livro["quantidade"] = quantidade
-  catalogo.append(novo_livro)
+
+  livro = criar_livro(nome=nome, autor=autor, ano=ano, quantidade=quantidade)
+
+  CATALOGO.append(livro)
   print("Livro cadastrado com sucesso.")
 
-def listagem():
-  print("Lista de livros no catálogo:\n")
-  for livro in cadastro:
-    print("- ", livro["nome"])
+
+def buscar_livro_por_nome(nome: str):
+  for livro in CATALOGO:
+    if livro["nome"] == nome:
+      return livro
+
+
+def buscar_livro_por_autor(autor: str):
+  livros = []
+  for livro in CATALOGO:
+    if livro["autor"] == autor:
+      livros.append(livro)
+  return livros
+
+
+def listar_livros():
+  if len(CATALOGO) == 0:
+    print("O catálogo está vazio. Insira um livro para começar.")
+  else:
+    print("Lista de livros no catálogo:")
+    for livro in CATALOGO:
+      exibir_informacao_do_livro(livro=livro)
+
+
 
 while True:
   escolha = input("Insira a opção que deseja: ")
+
   if escolha == "1":
-    cadastro = input("Insira o nome do livro que quer cadastrar: ").strip().lower()
-    if cadastro in catalogo:
-      print("Livro já existente no cadastro.")
+    nome = input("Insira o nome do livro que quer cadastrar: ").strip().lower()
+    if buscar_livro_por_nome(nome=nome) is None:
+      cadastrar_livro(nome=nome)
     else:
-      cadastrado()
+      print("Livro já existente no cadastro.")
+
   elif escolha == "2":
-    listagem()
+    listar_livros()
 
   elif escolha == "3":
     criterio = input("Buscar livro em catálogo: (nome/autor) ").strip().lower()
     if criterio == "nome":
         termo = input("Digite o nome do livro: ").strip().lower()
-        for livro in criterio:
-            if livro["nome"] == termo:
-                print("Livro encontrado:", livro)
-                continue
-            else:
-              print("Livro não encontrado.")
+        print(termo)
+        livro = buscar_livro_por_nome(nome=termo)
+        if livro is None:
+          print("Livro não encontrado.")
+        else:
+          exibir_informacao_do_livro(livro=livro)
     elif criterio == "autor":
         termo = input("Digite o nome do autor: ").strip().lower()
-        resultados = []
-        for livro in catalogo:
-          if livro["autor"] == termo:
-            resultados.append(livro)
-        if resultados:
-          print("Livros de autor: ", resultados)
+        livros = buscar_livro_por_autor(autor=termo)
+        if livros:
+          print(f"Livros do autor '{termo}':")
+          for livro in livros:
+            exibir_informacao_do_livro(livro=livro)
         else:
           print("Nenhum livro de autor no catálogo.")
-  
+    else:
+      print(f"Opção inválida: {criterio}.")
+    
   elif escolha == "6":
     print("Volte sempre!")
     break
-print(catalogo)
+
+# print(CATALOGO)
